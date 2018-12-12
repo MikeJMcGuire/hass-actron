@@ -1,3 +1,6 @@
+ARG BUILD_FROM
+FROM $BUILD_FROM
+
 FROM microsoft/dotnet:2.0-runtime AS base
 WORKDIR /app
 
