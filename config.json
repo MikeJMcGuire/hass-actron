@@ -7,6 +7,11 @@
   "startup": "before",
   "boot": "auto",
   "image": "mikejmcguire/hass-actron/image-{arch}-hass-actron",
+  "arch": [
+    "amd64",
+    "armhf",
+    "i386"
+  ],
   "options": {
     "MQTTUser": "mqttuser",
     "MQTTPassword": "mqttpassword",
