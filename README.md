@@ -14,3 +14,6 @@ You will need to ensure (through a local DNS configuration on your router or hom
 At this stage, you will also need to ensure that you've used the Actron Connect application to configure your Air Conditioner before making these changes.
 
 The add-on will need to maintain the TCP port 80 binding, as the air conditioner will only attempt to connect to the system on port 80.
+
+New Features (v0.5)
+- For air conditioners with per-zone temperatures, set 'RegisterZoneTemperatures' to true in the options.json (add-on options). This will create per-zone sensor elements in Home Assistant.
