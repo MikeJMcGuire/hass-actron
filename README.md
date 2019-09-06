@@ -1,5 +1,5 @@
 # hass-actron
-Actron Air Conditioner Add-On for Home Assistant
+Actron Air Conditioner Add-On for Home Assistant (https://blog.mikejmcguire.com/2018/12/19/actronconnect-and-home-assistant/)
 
 This add-on for Home Assistant enables you to control an Actron Air Conditioner equipped with the Actron Connect wireless module. 
 
