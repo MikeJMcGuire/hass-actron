@@ -21,10 +21,11 @@ namespace HMX.HASSActron.Controllers
 		{
 			AirConditionerCommand command;
 			CancellationToken cancellationToken = new CancellationToken();
-			ContentResult result;
+			ActionResult result;
+			ContentResult contentResult;
 			string strCommandType;
 
-			Logging.WriteDebugLog("DeviceController.Command() Client: {0}:{1}", HttpContext.Connection.RemoteIpAddress.ToString(), HttpContext.Connection.RemotePort.ToString());
+			Logging.WriteDebugLog("DeviceController.Command() Client Start: {0}:{1}", HttpContext.Connection.RemoteIpAddress.ToString(), HttpContext.Connection.RemotePort.ToString());
 
 			HttpContext.Response.Headers.Add("Access-Control-Allow-Headers", new Microsoft.Extensions.Primitives.StringValues("Accept, Content-Type, Authorization, Content-Length, X-Requested-With, X-Ninja-Token"));
 			HttpContext.Response.Headers.Add("Access-Control-Allow-Methods", new Microsoft.Extensions.Primitives.StringValues("GET,PUT,POST,DELETE,OPTIONS"));
@@ -36,37 +37,41 @@ namespace HMX.HASSActron.Controllers
 			command = AirConditioner.GetCommand(out strCommandType);
 
 			if (strCommandType != "4" & strCommandType != "5")
-				return new EmptyResult();
+				result = new EmptyResult();
 			else
 			{
-				result = new ContentResult();
+				contentResult = new ContentResult();
 
-				result.ContentType = "application/json";
-				result.StatusCode = 200;
+				contentResult.ContentType = "application/json";
+				contentResult.StatusCode = 200;
 
 				if (strCommandType == "4")
 				{
-					result.Content = string.Format("{{\"DEVICE\":[{{\"G\":\"0\",\"V\":2,\"D\":4,\"DA\":{{\"amOn\":{0},\"tempTarget\":{1},\"fanSpeed\":{2},\"mode\":{3}}}}}]}}",
+					contentResult.Content = string.Format("{{\"DEVICE\":[{{\"G\":\"0\",\"V\":2,\"D\":4,\"DA\":{{\"amOn\":{0},\"tempTarget\":{1},\"fanSpeed\":{2},\"mode\":{3}}}}}]}}",
 						command.amOn ? "true" : "false",
 						command.tempTarget.ToString("F1"),
 						command.fanSpeed.ToString(),
 						command.mode.ToString()
 					);
 
-					Logging.WriteDebugLog("DeviceController.Command() Command: {0}", result.Content);
+					Logging.WriteDebugLog("DeviceController.Command() Command: {0}", contentResult.Content);
 
 				}
 				else if (strCommandType == "5")
 				{
-					result.Content = string.Format("{{\"DEVICE\":[{{\"G\":\"0\",\"V\":2,\"D\":5,\"DA\":{{\"enabledZones\":[{0}]}}}}]}}",
+					contentResult.Content = string.Format("{{\"DEVICE\":[{{\"G\":\"0\",\"V\":2,\"D\":5,\"DA\":{{\"enabledZones\":[{0}]}}}}]}}",
 						command.enabledZones
 					);
 
-					Logging.WriteDebugLog("DeviceController.Command() Command: {0}", result.Content);
+					Logging.WriteDebugLog("DeviceController.Command() Command: {0}", contentResult.Content);
 				}
 
-				return result;
+				result = contentResult;
 			}
+
+			Logging.WriteDebugLog("DeviceController.Command() Client End: {0}:{1}", HttpContext.Connection.RemoteIpAddress.ToString(), HttpContext.Connection.RemotePort.ToString());
+
+			return result;
 		}
 
 		[Route("data")]
