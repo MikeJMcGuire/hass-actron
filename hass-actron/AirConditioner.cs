@@ -27,7 +27,7 @@ namespace HMX.HASSActron
 			get { return _airConditionerData.dtLastUpdate; }
 		}
 
-		public static ManualResetEvent Event
+		public static ManualResetEvent EventCommand
 		{
 			get { return _eventCommand; }
 		}

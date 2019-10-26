@@ -10,27 +10,30 @@ namespace HMX.HASSActron
 	{
 		public static async Task<bool> WaitOneAsync(this WaitHandle handle, int millisecondsTimeout, CancellationToken cancellationToken)
 		{
-			RegisteredWaitHandle registeredHandle = null;
-			CancellationTokenRegistration tokenRegistration = default(CancellationTokenRegistration);
+			RegisteredWaitHandle registeredWaitHandle = null;
+			CancellationTokenRegistration cancellationTokenRegistration = default;
+			TaskCompletionSource<bool> taskCompletionSource;
+
 			try
 			{
-				var tcs = new TaskCompletionSource<bool>();
-				registeredHandle = ThreadPool.RegisterWaitForSingleObject(
-					handle,
-					(state, timedOut) => ((TaskCompletionSource<bool>)state).TrySetResult(!timedOut),
-					tcs,
-					millisecondsTimeout,
-					true);
-				tokenRegistration = cancellationToken.Register(
+				taskCompletionSource = new TaskCompletionSource<bool>();
+				
+				registeredWaitHandle = ThreadPool.RegisterWaitForSingleObject(handle, 
+					(state, timedOut) => ((TaskCompletionSource<bool>) state).TrySetResult(!timedOut),
+					taskCompletionSource, millisecondsTimeout, true);
+
+				cancellationTokenRegistration = cancellationToken.Register(
 					state => ((TaskCompletionSource<bool>)state).TrySetCanceled(),
-					tcs);
-				return await tcs.Task;
+					taskCompletionSource);
+
+				return await taskCompletionSource.Task;
 			}
 			finally
 			{
-				if (registeredHandle != null)
-					registeredHandle.Unregister(null);
-				tokenRegistration.Dispose();
+				if (registeredWaitHandle != null)
+					registeredWaitHandle.Unregister(null);
+
+				cancellationTokenRegistration.Dispose();
 			}
 		}
 	}
