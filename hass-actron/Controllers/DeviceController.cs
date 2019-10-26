@@ -14,10 +14,13 @@ namespace HMX.HASSActron.Controllers
 	[Route("rest/{version:required}/block/{device:required}")]
     public class DeviceController : Controller
 	{
+		private static int _iTimeout = 5000;
+
 		[Route("commands")]
 		public async Task<IActionResult> Command(string version, string device)
 		{
 			AirConditionerCommand command;
+			CancellationToken cancellationToken = new CancellationToken();
 			ContentResult result;
 			string strCommandType;
 
@@ -27,14 +30,17 @@ namespace HMX.HASSActron.Controllers
 			HttpContext.Response.Headers.Add("Access-Control-Allow-Methods", new Microsoft.Extensions.Primitives.StringValues("GET,PUT,POST,DELETE,OPTIONS"));
 			HttpContext.Response.Headers.Add("Access-Control-Allow-Origin", new Microsoft.Extensions.Primitives.StringValues("*"));
 
+			if (!await AirConditioner.Event.WaitOneAsync(_iTimeout, cancellationToken))
+				return new EmptyResult();
+
 			command = AirConditioner.GetCommand(out strCommandType);
 
 			if (strCommandType != "4" & strCommandType != "5")
 			{
-				if (Service.ForwardToInternalWebService == "")
+				//if (Service.ForwardToInternalWebService == "")
 					return new EmptyResult();
-				else
-					return await ForwardCommandToOriginalWebService();
+				//else
+				//	return await ForwardCommandToOriginalWebService();
 			}
 			else
 			{
