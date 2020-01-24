@@ -68,7 +68,7 @@ namespace HMX.HASSActron
 		{
 			Logging.WriteDebugLog("Service.MQTTRegister()");
 
-			MQTT.SendMessage("homeassistant/climate/actronaircon/config", "{{\"name\":\"{1}\",\"modes\":[\"off\",\"auto\",\"cool\",\"fan_only\",\"heat\"],\"fan_modes\":[\"high\",\"medium\",\"low\"],\"mode_command_topic\":\"actron/aircon/mode/set\",\"power_command_topic\":\"actron/aircon/power/set\",\"temperature_command_topic\":\"actron/aircon/temperature/set\",\"fan_mode_command_topic\":\"actron/aircon/fan/set\",\"min_temp\":\"12\",\"max_temp\":\"30\",\"temp_step\":\"0.5\",\"fan_mode_state_topic\":\"actron/aircon/fanmode\",\"action_topic\":\"actron/aircon/compressor\",\"temperature_state_topic\":\"actron/aircon/settemperature\",\"mode_state_topic\":\"actron/aircon/mode\",\"current_temperature_topic\":\"actron/aircon/temperature\",\"availability_topic\":\"{0}/status\"}}", _strServiceName.ToLower(), _strDeviceName);
+			MQTT.SendMessage("homeassistant/climate/actronaircon/config", "{{\"name\":\"{1}\",\"modes\":[\"off\",\"auto\",\"cool\",\"fan_only\",\"heat\"],\"fan_modes\":[\"high\",\"medium\",\"low\"],\"mode_command_topic\":\"actron/aircon/mode/set\",\"temperature_command_topic\":\"actron/aircon/temperature/set\",\"fan_mode_command_topic\":\"actron/aircon/fan/set\",\"min_temp\":\"12\",\"max_temp\":\"30\",\"temp_step\":\"0.5\",\"fan_mode_state_topic\":\"actron/aircon/fanmode\",\"action_topic\":\"actron/aircon/compressor\",\"temperature_state_topic\":\"actron/aircon/settemperature\",\"mode_state_topic\":\"actron/aircon/mode\",\"current_temperature_topic\":\"actron/aircon/temperature\",\"availability_topic\":\"{0}/status\"}}", _strServiceName.ToLower(), _strDeviceName);
 
 			foreach (int iZone in AirConditioner.Zones.Keys)
 			{
@@ -81,7 +81,6 @@ namespace HMX.HASSActron
 					MQTT.SendMessage(string.Format("homeassistant/sensor/actron/airconzone{0}/config", iZone), "{{}}"); // Clear existing devices
 			}
 			
-			MQTT.Subscribe("actron/aircon/power/set"); 
 			MQTT.Subscribe("actron/aircon/mode/set");
 			MQTT.Subscribe("actron/aircon/fan/set");
 			MQTT.Subscribe("actron/aircon/temperature/set");
@@ -155,24 +154,6 @@ namespace HMX.HASSActron
 
 						case "fan_only":
 							AirConditioner.ChangeMode(lRequestId, AirConditionerMode.FanOnly);
-
-							break;
-					}
-
-					break;
-
-				case "actron/aircon/power/set":
-					Logging.WriteDebugLog("ServiceCore.MQTTProcessor() {0}: {1}", strTopic, strPayload);
-
-					switch (strPayload)
-					{
-						case "OFF":
-							AirConditioner.ChangePower(lRequestId, false);
-
-							break;
-
-						case "ON":
-							AirConditioner.ChangePower(lRequestId, true);
 
 							break;
 					}

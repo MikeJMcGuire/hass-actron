@@ -133,7 +133,11 @@ namespace HMX.HASSActron
 							break;
 
 						case 2:
-							MQTT.SendMessage("actron/aircon/compressor", "idle");
+							if (_airConditionerData.bOn)
+								MQTT.SendMessage("actron/aircon/compressor", "idle");
+							else
+								MQTT.SendMessage("actron/aircon/compressor", "off");
+
 							break;
 
 						default:
@@ -237,24 +241,6 @@ namespace HMX.HASSActron
 			}
 		}
 	
-		public static void ChangePower(long lRequestId, bool bState)
-		{
-			AirConditionerCommand command = new AirConditionerCommand();
-
-			Logging.WriteDebugLog("AirConditioner.ChangePower() [0x{0}] Changing Power State: {1}", lRequestId.ToString("X8"), bState ? "On" : "Off");
-
-			lock (_oLockCommand)
-			{
-				command.amOn = bState;
-				command.tempTarget = _airConditionerCommand.tempTarget;
-				command.fanSpeed = _airConditionerCommand.fanSpeed;
-				command.mode = _airConditionerCommand.mode;
-				command.enabledZones = _airConditionerCommand.enabledZones;
-			}
-
-			PostCommand(lRequestId, "System", command);
-		}
-
 		public static void ChangeMode(long lRequestId, AirConditionerMode mode)
 		{
 			AirConditionerCommand command = new AirConditionerCommand();
@@ -269,6 +255,8 @@ namespace HMX.HASSActron
 				command.mode = (mode == AirConditionerMode.None ? _airConditionerData.iMode : (int)mode);
 				command.enabledZones = _airConditionerCommand.enabledZones;
 			}
+
+			MQTT.SendMessage("actron/aircon/mode", (mode != AirConditionerMode.None ? Enum.GetName(typeof(ModeMQTT), mode).ToLower() : "off"));
 
 			PostCommand(lRequestId, "System", command);
 		}
@@ -287,6 +275,8 @@ namespace HMX.HASSActron
 				command.mode = _airConditionerCommand.mode;
 				command.enabledZones = _airConditionerCommand.enabledZones;
 			}
+
+			MQTT.SendMessage("actron/aircon/fanmode", Enum.GetName(typeof(FanSpeed), speed).ToLower());
 
 			PostCommand(lRequestId, "System", command);
 		}
@@ -313,6 +303,8 @@ namespace HMX.HASSActron
 					strZones[iZone - 1] = bOn ? "1" : "0";
 
 					command.enabledZones = string.Format("{0},{1},{2},{3},{4},{5},{6},{7}", strZones[0], strZones[1], strZones[2], strZones[3], strZones[4], strZones[5], strZones[6], strZones[7]);
+
+					MQTT.SendMessage(string.Format("actron/aircon/zone{0}", iZone), bOn ? "ON" : "OFF");
 				}
 			}
 
@@ -333,6 +325,8 @@ namespace HMX.HASSActron
 				command.mode = _airConditionerCommand.mode;
 				command.enabledZones = _airConditionerCommand.enabledZones;
 			}
+
+			MQTT.SendMessage("actron/aircon/settemperature", command.tempTarget.ToString());
 
 			PostCommand(lRequestId, "System", command);
 		}	
