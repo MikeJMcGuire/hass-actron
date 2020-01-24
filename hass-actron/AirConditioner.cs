@@ -217,8 +217,25 @@ namespace HMX.HASSActron
 				_airConditionerCommand = command;
 			}
 		}
-
 	
+		public static void ChangePower(long lRequestId, bool bState)
+		{
+			AirConditionerCommand command = new AirConditionerCommand();
+
+			Logging.WriteDebugLog("AirConditioner.ChangePower() [0x{0}] Changing Power State: {1}", lRequestId.ToString("X8"), bState ? "On" : "Off");
+
+			lock (_oLockCommand)
+			{
+				command.amOn = bState;
+				command.tempTarget = _airConditionerCommand.tempTarget;
+				command.fanSpeed = _airConditionerCommand.fanSpeed;
+				command.mode = _airConditionerCommand.mode;
+				command.enabledZones = _airConditionerCommand.enabledZones;
+			}
+
+			PostCommand(lRequestId, "System", command);
+		}
+
 		public static void ChangeMode(long lRequestId, AirConditionerMode mode)
 		{
 			AirConditionerCommand command = new AirConditionerCommand();
@@ -230,7 +247,7 @@ namespace HMX.HASSActron
 				command.amOn = (mode == AirConditionerMode.None ? false : true);
 				command.tempTarget = _airConditionerCommand.tempTarget;
 				command.fanSpeed = _airConditionerCommand.fanSpeed;
-				command.mode = (mode == AirConditionerMode.None ? _airConditionerData.iMode : (int) mode);
+				command.mode = (mode == AirConditionerMode.None ? _airConditionerData.iMode : (int)mode);
 				command.enabledZones = _airConditionerCommand.enabledZones;
 			}
 

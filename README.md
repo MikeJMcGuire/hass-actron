@@ -19,6 +19,9 @@ The add-on will need to maintain the TCP port 80 binding, as the air conditioner
 
 If you add the local DNS entry for updates.lx-cloud.com, it will prevent the ActronConnect module from auto-updating. Feel free to use auto-updating, but there is a risk that an update will prevent the ActronConnect from working with Home Assistant. If this happens though, let me know and we can investigate the changes.
 
+New Features (v0.9)
+- Enabled power on/off without changing air conditioner mode.
+
 New Features (v0.7)
 - Introduced a short delay to suppress incoming data from the actron connect after sending it new commands, as the actron connect has some delay between accepting a command, and reflecting that in updates that it sends back to HA.
 
