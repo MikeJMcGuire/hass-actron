@@ -121,6 +121,25 @@ namespace HMX.HASSActron
 						if (_dZones.Count >= 7) MQTT.SendMessage("actron/aircon/zone7/temperature", _airConditionerData.dblZone7Temperature.ToString());
 						if (_dZones.Count >= 8) MQTT.SendMessage("actron/aircon/zone8/temperature", _airConditionerData.dblZone8Temperature.ToString());
 					}
+
+					switch (_airConditionerData.iCompressorActivity)
+					{
+						case 0:
+							MQTT.SendMessage("actron/aircon/compressor", "heating");
+							break;
+
+						case 1:
+							MQTT.SendMessage("actron/aircon/compressor", "cooling");
+							break;
+
+						case 2:
+							MQTT.SendMessage("actron/aircon/compressor", "idle");
+							break;
+
+						default:
+							MQTT.SendMessage("actron/aircon/compressor", "off");
+							break;
+					}
 				}
 			}
 
