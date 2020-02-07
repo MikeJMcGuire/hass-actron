@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>HMX.HASSActron</RootNamespace>
     <FileVersion>1.0.0.0</FileVersion>
     <Version>1.0.0</Version>
