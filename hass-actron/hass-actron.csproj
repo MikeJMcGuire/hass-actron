@@ -4,10 +4,12 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <RootNamespace>HMX.HASSActron</RootNamespace>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>C:\Projects\HASS Actron\</OutputPath>
+    <FileVersion>1.0.0.0</FileVersion>
+    <Version>1.0.0</Version>
+    <AssemblyTitle>HASS Actron</AssemblyTitle>
+    <Company>HMX Consulting Pty Ltd</Company>
+    <Copyright>HMX Consulting Pty Ltd 2019</Copyright>
+    <Product>HASS Actron</Product>
   </PropertyGroup>
 
   <ItemGroup>
