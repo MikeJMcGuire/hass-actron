@@ -21,7 +21,7 @@ If you add the local DNS entry for updates.lx-cloud.com, it will prevent the Act
 
 New Features/Bugs (v0.93)
 - MQTT entities will now appear linked to a single device under the MQTT integration.
-- Automatic mode for the Actron is now working.
+- Bug: Automatic mode for the Actron is now working.
 
 New Features (v0.91)
 - MQTT devices will now appear online/offline depending on the connection status of the Actron Connect (i.e. if the Actron Connect is not sending data to the add-on, the MQTT devices will appear as unavailable).
