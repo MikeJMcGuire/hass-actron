@@ -1,3 +1,6 @@
+# Changelog
+All notable changes to this project will be documented in this file.
+
 ## [v0.93] - 2020-06-09
 
 ### Added
