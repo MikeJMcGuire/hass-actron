@@ -82,7 +82,7 @@ namespace HMX.HASSActron
 			return ipResult;
 		}
 
-		public static async void ForwardDataToOriginalWebService(IHeaderDictionary dHeaders, string strHost, string strPath, string strData)
+		public static async void ForwardDataToOriginalWebService(string strUserAgent, string strContentType, string strNinjaToken, string strHost, string strPath, string strData)
 		{
 			HttpClient httpClient = null;
 			HttpClientHandler httpClientHandler;
@@ -103,42 +103,17 @@ namespace HMX.HASSActron
 			}
 
 			httpClientHandler = new HttpClientHandler();
-			httpClientHandler.Proxy = new WebProxy(ipProxy.ToString(), 80);
+			httpClientHandler.Proxy = new WebProxy(string.Format("http://{0}:80", ipProxy.ToString()));
 			httpClientHandler.UseProxy = true;
 
 			httpClient = new HttpClient(httpClientHandler);
 
 			httpClient.DefaultRequestHeaders.Connection.Add("close");
+			httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(strUserAgent);
+			httpClient.DefaultRequestHeaders.Add("X-Ninja-Token", strNinjaToken);
 
 			stringContent = new StringContent(strData);
-
-			foreach (string strHeader in dHeaders.Keys)
-			{
-				try
-				{
-					switch (strHeader)
-					{
-						case "User-Agent":
-							Logging.WriteDebugLogError("Proxy.ForwardDataToOriginalWebService() User-Agent: {0}", dHeaders[strHeader].ToString());
-							httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(dHeaders[strHeader].ToString());
-							break;
-
-						case "Content-Type":
-							Logging.WriteDebugLogError("Proxy.ForwardDataToOriginalWebService() Content-Type: {0}", dHeaders[strHeader].ToString());
-							stringContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(dHeaders[strHeader].ToString());
-							break;
-
-						case "X-Ninja-Token":
-							Logging.WriteDebugLogError("Proxy.ForwardDataToOriginalWebService() X-Ninja-Token: {0}", dHeaders[strHeader].ToString());
-							httpClient.DefaultRequestHeaders.Add(strHeader, dHeaders[strHeader].ToString());
-							break;
-					}
-				}
-				catch (Exception eException)
-				{
-					Logging.WriteDebugLogError("Proxy.ForwardDataToOriginalWebService()", eException, "Unable to add request header ({0}).", strHeader);
-				}
-			}
+			stringContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(strContentType);
 
 			try
 			{
