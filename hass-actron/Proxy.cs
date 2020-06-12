@@ -119,14 +119,17 @@ namespace HMX.HASSActron
 					switch (strHeader)
 					{
 						case "User-Agent":
+							Logging.WriteDebugLogError("Proxy.ForwardDataToOriginalWebService() User-Agent: {0}", dHeaders[strHeader].ToString());
 							httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(dHeaders[strHeader].ToString());
 							break;
 
 						case "Content-Type":
+							Logging.WriteDebugLogError("Proxy.ForwardDataToOriginalWebService() Content-Type: {0}", dHeaders[strHeader].ToString());
 							stringContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(dHeaders[strHeader].ToString());
 							break;
 
 						case "X-Ninja-Token":
+							Logging.WriteDebugLogError("Proxy.ForwardDataToOriginalWebService() X-Ninja-Token: {0}", dHeaders[strHeader].ToString());
 							httpClient.DefaultRequestHeaders.Add(strHeader, dHeaders[strHeader].ToString());
 							break;
 					}
