@@ -154,7 +154,10 @@ namespace HMX.HASSActron.Controllers
 			response.error = null;
 			response.id = 0;
 
+			if (Service.ForwardToOriginalWebService)
+				Proxy.ForwardDataToOriginalWebService(HttpContext.Request.Headers, HttpContext.Request.Host.ToString(), HttpContext.Request.Path, strData);
+
 			return new ObjectResult(response);
-		}		
+		}
 	}
 }
