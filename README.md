@@ -20,10 +20,8 @@ The add-on will need to maintain the TCP port 80 binding, as the air conditioner
 If you add the local DNS entry for updates.lx-cloud.com, it will prevent the ActronConnect module from auto-updating. Feel free to use auto-updating, but there is a risk that an update will prevent the ActronConnect from working with Home Assistant. If this happens though, let me know and we can investigate the changes.
 
 ## Configuration
-RegisterZoneTemperatures: true/false
-
+### RegisterZoneTemperatures: true/false
 If you Actron has temperature sensors per zone, setting this option to true will create a sensor in HA for each zone.
 
-ForwardToOriginalWebService: true/false
-
+### ForwardToOriginalWebService: true/false
 If you set this option to true, any data/status received from the Actron will be forwarded to the original cloud service used by the phone app. This will let the phone see (but not control) the state of the Actron.
