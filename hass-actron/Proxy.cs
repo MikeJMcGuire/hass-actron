@@ -91,7 +91,7 @@ namespace HMX.HASSActron
 			StringContent stringContent;
 			IPAddress ipProxy; 
 			string strContent;
-			string strURL = "http://{0}/{1}" + strPath;
+			string strURL = string.Format("http://{0}{1}", strHost, strPath);
 
 			Logging.WriteDebugLog("Proxy.ForwardDataToOriginalWebService() URL: " + strURL);
 

@@ -46,7 +46,8 @@ namespace HMX.HASSActron
 			bool.TryParse(configuration["ForwardToOriginalWebService"] ?? "false", out _bForwardToOriginalWebService);
 
 			Logging.WriteDebugLog("Service.Start() RegisterZoneTemperatures: {0}", _bRegisterZoneTemperatures);
-		
+			Logging.WriteDebugLog("Service.Start() ForwardToOriginalWebService: {0}", _bForwardToOriginalWebService);
+
 			MQTT.StartMQTT(configuration["MQTTBroker"] ?? "core-mosquitto", _strServiceName, configuration["MQTTUser"] ?? "", configuration["MQTTPassword"] ?? "", MQTTProcessor);
 
 			AirConditioner.Configure(configuration);
