@@ -14,6 +14,10 @@ namespace HMX.HASSActron
 	{
 		private static HttpClient _httpClient = null;
 		private static int _iWaitTime = 5000; //ms
+		private static int _iDefaultTTL = 60; //s
+		private static IPAddress _ipProxy = null;
+		private static object _oProxyLock = new object();
+		private static DateTime _dtProxyIPValidity = DateTime.MinValue;
 
 		static Proxy()
 		{
@@ -40,6 +44,16 @@ namespace HMX.HASSActron
 			IPAddress ipResult = null;
 
 			Logging.WriteDebugLog("Proxy.GetTargetAddress()");
+
+			lock (_oProxyLock)
+			{
+				if (_dtProxyIPValidity >= DateTime.Now)
+				{
+					Logging.WriteDebugLog("Proxy.GetTargetAddress() Using cached entry: {0}", _ipProxy.ToString());
+					ipResult = _ipProxy;
+					goto Cleanup;
+				}
+			}
 
 			try
 			{
@@ -78,6 +92,15 @@ namespace HMX.HASSActron
 		Cleanup:
 			cancellationToken?.Dispose();
 			httpResponse?.Dispose();
+
+			lock (_oProxyLock)
+			{
+				if (ipResult != null)
+				{
+					_ipProxy = ipResult;
+					_dtProxyIPValidity = DateTime.Now.AddSeconds(_iDefaultTTL);
+				}
+			}
 
 			return ipResult;
 		}

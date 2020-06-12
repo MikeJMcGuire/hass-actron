@@ -173,17 +173,14 @@ namespace HMX.HASSActron.Controllers
 					switch (strHeader)
 					{
 						case "User-Agent":
-							Logging.WriteDebugLog("DeviceController.ForwardDataToOriginalWebService() User-Agent: {0}", HttpContext.Request.Headers[strHeader].ToString());
 							strUserAgent = HttpContext.Request.Headers[strHeader].ToString();
 							break;
 
 						case "Content-Type":
-							Logging.WriteDebugLog("DeviceController.ForwardDataToOriginalWebService() Content-Type: {0}", HttpContext.Request.Headers[strHeader].ToString());
 							strCnntentType = HttpContext.Request.Headers[strHeader].ToString();
 							break;
 
 						case "X-Ninja-Token":
-							Logging.WriteDebugLog("DeviceController.ForwardDataToOriginalWebService() X-Ninja-Token: {0}", HttpContext.Request.Headers[strHeader].ToString());
 							strNinjaToken = HttpContext.Request.Headers[strHeader].ToString();
 							break;
 					}
