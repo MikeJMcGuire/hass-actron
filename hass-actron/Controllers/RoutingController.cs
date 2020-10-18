@@ -27,6 +27,7 @@ namespace HMX.HASSActron.Controllers
 			result.Content = "Request URI: " + HttpContext.Request.Path;
 			result.Content = "Request Query: " + HttpContext.Request.QueryString;
 			result.Content = "Request Method: " + HttpContext.Request.Method;
+			result.Content = "Request Host: " + HttpContext.Request.Host;
 
 			return result;
 		}
