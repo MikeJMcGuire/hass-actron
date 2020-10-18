@@ -19,12 +19,14 @@ namespace HMX.HASSActron.Controllers
 		{
 			ContentResult result = new ContentResult();
 
-			Logging.WriteDebugLog("RoutingController.RouteRequest() Client: {0}:{1}", HttpContext.Connection.RemoteIpAddress.ToString(), HttpContext.Connection.RemotePort.ToString());
+			Logging.WriteDebugLog("RoutingController.RouteRequest() Client: {0}:{1}, Path: {2}", HttpContext.Connection.RemoteIpAddress.ToString(), HttpContext.Connection.RemotePort.ToString(), HttpContext.Request.Path);
 
 			result.ContentType = "text/html";
 			result.StatusCode = 200;
 
 			result.Content = "Request URI: " + HttpContext.Request.Path;
+			result.Content = "Request Query: " + HttpContext.Request.QueryString;
+			result.Content = "Request Method: " + HttpContext.Request.Method;
 
 			return result;
 		}
