@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [v0.95] - 2020-10-18
+
+### Changed
+- The ForwardToOriginalWebService option has been added updated to send all requests from the Actron or client app to the original web service. This will allow the AC to register (and get a token) with the custom DNS settings present.
+
 ## [v0.94] - 2020-06-12
 
 ### Added
