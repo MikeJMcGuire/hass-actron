@@ -14,7 +14,7 @@ namespace HMX.HASSActron.Controllers
 {
 	public class RoutingController : Controller
 	{
-		[Route("/*")]
+		[Route("/{**path}")]
 		public IActionResult RouteRequest()
 		{
 			ContentResult result = new ContentResult();
