@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Text;
 
 namespace HMX.HASSActron.Controllers
 {
@@ -18,16 +19,19 @@ namespace HMX.HASSActron.Controllers
 		public IActionResult RouteRequest()
 		{
 			ContentResult result = new ContentResult();
+			StringBuilder sbContent = new StringBuilder();
 
 			Logging.WriteDebugLog("RoutingController.RouteRequest() Client: {0}:{1}, Path: {2}", HttpContext.Connection.RemoteIpAddress.ToString(), HttpContext.Connection.RemotePort.ToString(), HttpContext.Request.Path);
 
 			result.ContentType = "text/html";
 			result.StatusCode = 200;
 
-			result.Content = "Request URI: " + HttpContext.Request.Path;
-			result.Content = "Request Query: " + HttpContext.Request.QueryString;
-			result.Content = "Request Method: " + HttpContext.Request.Method;
-			result.Content = "Request Host: " + HttpContext.Request.Host;
+			sbContent.Append("Request URI: " + HttpContext.Request.Path + "<br />");
+			sbContent.Append("Request Query: " + HttpContext.Request.QueryString + "<br />");
+			sbContent.Append("Request Method: " + HttpContext.Request.Method + "<br />");
+			sbContent.Append("Request Host: " + HttpContext.Request.Host + "<br />");
+
+			result.Content = sbContent.ToString();
 
 			return result;
 		}
