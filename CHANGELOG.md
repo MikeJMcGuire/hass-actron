@@ -4,7 +4,8 @@ All notable changes to this project will be documented in this file.
 ## [v0.95] - 2020-10-18
 
 ### Changed
-- The ForwardToOriginalWebService option has been added updated to send all requests from the Actron or client app to the original web service. This will allow the AC to register (and get a token) with the custom DNS settings present.
+- Updated to .NET 5.0 Framework.
+- Added registration pass-through to the cloud service. When the client app is used to reconfigure the AC, the add-on will pass the registration request to the cloud service to receive an API Token, and then continue to function as before.
 
 ## [v0.94] - 2020-06-12
 

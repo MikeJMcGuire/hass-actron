@@ -30,7 +30,7 @@ namespace HMX.HASSActron
 			IConfigurationRoot configuration;
 			IWebHost webHost;
 
-			Logging.WriteDebugLog("Service.Start()");
+			Logging.WriteDebugLog("Service.Start() Build Date: {0}", Properties.Resources.BuildDate);
 
 			try
 			{
