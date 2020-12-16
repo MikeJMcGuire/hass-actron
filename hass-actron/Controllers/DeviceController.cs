@@ -204,7 +204,7 @@ namespace HMX.HASSActron.Controllers
 			return contentResult;
 		}
 
-		[Route("/")]
+		[Route("")]
 		[HttpDelete]
 		public async Task<IActionResult> ActivateDelete(string version, string device, string user_access_token)
 		{
