@@ -196,6 +196,7 @@ namespace HMX.HASSActron
 
 			httpClient.DefaultRequestHeaders.Connection.Add("close");
 			httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(strUserAgent);
+			
 
 			//stringContent = new StringContent(strData);
 			//stringContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(strContentType);
