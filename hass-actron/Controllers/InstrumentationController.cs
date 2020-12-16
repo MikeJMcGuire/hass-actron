@@ -17,7 +17,10 @@ namespace HMX.HASSActron.Controllers
 			result.ContentType = "text/html";
 			result.StatusCode = 200;
 
-			result.Content = "Last Update from Air Conditioner: " + AirConditioner.LastUpdate;
+			if (AirConditioner.DataReceived)
+				result.Content = "Last Update from Air Conditioner: " + AirConditioner.LastUpdate;
+			else
+				result.Content = "Last Update from Air Conditioner: Never";
 
 			return result;
 		}
@@ -32,8 +35,13 @@ namespace HMX.HASSActron.Controllers
 			result.ContentType = "text/html";
 			result.StatusCode = 200;
 
-			result.Content = "Last Post from Air Conditioner: " + AirConditioner.LastUpdate + "<br/>";
-			result.Content += "Last Request from Air Conditioner: " + AirConditioner.LastRequest;
+			if (AirConditioner.DataReceived)
+			{
+				result.Content = "Last Post from Air Conditioner: " + AirConditioner.LastUpdate + "<br/>";
+				result.Content += "Last Request from Air Conditioner: " + AirConditioner.LastRequest;
+			}
+			else
+				result.Content = "Last Update from Air Conditioner: Never";
 
 			return result;
 		}
