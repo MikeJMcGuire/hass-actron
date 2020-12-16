@@ -226,7 +226,7 @@ namespace HMX.HASSActron
 					Logging.WriteDebugLog("Response: " + response.Response);
 
 					if (httpResponse.Headers.Contains("X-NxGen-Version"))
-						response.Headers.Add("X-NxGen-Version", httpResponse.Headers.GetValues("X-NxGen-Version").GetEnumerator().Current);			
+						response.Headers.Add("X-NxGen-Version", "v1.3.0.434-master (6b19e1028a2e)"); // httpResponse.Headers.GetValues("X -NxGen-Version").GetEnumerator().MoveNext().Current);			
 				}
 				else
 				{
