@@ -216,7 +216,7 @@ namespace HMX.HASSActron.Controllers
 
 			strUserAgent = HttpContext.Request.Headers["User-Agent"];
 			strHost = Request.Host.Host;
-			strPage = string.Format("/rest/{0}/block/{1}/activate?user_access_token={2}", version, device, user_access_token);
+			strPage = string.Format("/rest/{0}/block/{1}?user_access_token={2}", version, device, user_access_token);
 
 			Logging.WriteDebugLog("DeviceController.ActivateDelete() Client: {0}:{1} DELETE http://{2}", HttpContext.Connection.RemoteIpAddress.ToString(), HttpContext.Connection.RemotePort.ToString(), strHost + strPage);
 
