@@ -178,6 +178,7 @@ namespace HMX.HASSActron
 			Logging.WriteDebugLog("Proxy.ForwardRequestToOriginalWebService() URL: " + strURL);
 
 			response.ProxySuccessful = true;
+			response.Headers = new Dictionary<string, string>();
 
 			ipProxy = await GetTargetAddress(strHost);
 			if (ipProxy == null)
@@ -223,6 +224,9 @@ namespace HMX.HASSActron
 					response.ResponseCode = httpResponse.StatusCode;
 					response.Response = await httpResponse.Content.ReadAsStringAsync();
 					Logging.WriteDebugLog("Response: " + response.Response);
+
+					if (httpResponse.Headers.Contains("X-NxGen-Version"))
+						response.Headers.Add("X-NxGen-Version", httpResponse.Headers.GetValues("X-NxGen-Version").ToString());			
 				}
 				else
 				{
