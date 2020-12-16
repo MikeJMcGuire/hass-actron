@@ -10,19 +10,9 @@ namespace HMX.HASSActron.Controllers
 		[Route("/")]
 		public IActionResult Status()
 		{
-			ContentResult result = new ContentResult();
-
 			Logging.WriteDebugLog("Instrumentation.Status() Client: {0}:{1}", HttpContext.Connection.RemoteIpAddress.ToString(), HttpContext.Connection.RemotePort.ToString());
 
-			result.ContentType = "text/html";
-			result.StatusCode = 200;
-
-			if (AirConditioner.DataReceived)
-				result.Content = "Last Update from Air Conditioner: " + AirConditioner.LastUpdate;
-			else
-				result.Content = "Last Update from Air Conditioner: Never";
-
-			return result;
+			return new ObjectResult("OK");
 		}
 
 		[Route("/status")]
