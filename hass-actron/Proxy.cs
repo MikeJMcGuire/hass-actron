@@ -172,7 +172,6 @@ namespace HMX.HASSActron
 			HttpClientHandler httpClientHandler;
 			HttpResponseMessage httpResponse = null;
 			CancellationTokenSource cancellationToken = null;
-			//StringContent stringContent;
 			IPAddress ipProxy;
 			string strURL = string.Format("http://{0}{1}", strHost, strPath);
 
@@ -197,10 +196,6 @@ namespace HMX.HASSActron
 			httpClient.DefaultRequestHeaders.Connection.Add("close");
 			httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(strUserAgent);
 			
-
-			//stringContent = new StringContent(strData);
-			//stringContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(strContentType);
-
 			try
 			{
 				cancellationToken = new CancellationTokenSource();
@@ -217,12 +212,6 @@ namespace HMX.HASSActron
 						httpResponse = await httpClient.GetAsync(strURL, cancellationToken.Token);
 
 						break;
-
-					/*case "POST":
-						httpResponse = await httpClient.PostAsync(strURL, stringContent, cancellationToken.Token);
-
-						break;*/
-
 
 					default:
 						response.ProxySuccessful = false;
@@ -243,7 +232,7 @@ namespace HMX.HASSActron
 			}
 			catch (Exception eException)
 			{
-				Logging.WriteDebugLogError("Proxy.ForwardDataToOriginalWebService()", eException, "Unable to process API HTTP response.");
+				Logging.WriteDebugLogError("Proxy.ForwardRequestToOriginalWebService()", eException, "Unable to process API HTTP response.");
 			}
 
 		Cleanup:

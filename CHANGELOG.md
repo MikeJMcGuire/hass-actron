@@ -5,7 +5,8 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - Updated to .NET 5.0 Framework.
-- Added registration pass-through to the cloud service. When the client app is used to reconfigure the AC, the add-on will pass the registration request to the cloud service to receive an API Token, and then continue to function as before.
+- Added registration pass-through to the cloud service. When the client app is used to reconfigure the AC, the add-on will pass the registration request to the cloud service to receive an API Token, and then continue to function as before. This allows for using the App to reconfigure Wi-Fi with the custom DNS entries in place.
+- Updated Device Registration MQTT information.
 
 ## [v0.94] - 2020-06-12
 
