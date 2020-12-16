@@ -192,8 +192,8 @@ namespace HMX.HASSActron.Controllers
 				contentResult.StatusCode = (int)response.ResponseCode;
 				contentResult.Content = response.Response;
 
-				if (response.Headers.ContainsKey("X-NxGen-Version"))
-					HttpContext.Response.Headers.Add("X-NxGen-Version", new Microsoft.Extensions.Primitives.StringValues(response.Headers["X-NxGen-Version"]));
+				//if (response.Headers.ContainsKey("X-NxGen-Version"))
+				//	HttpContext.Response.Headers.Add("X-NxGen-Version", new Microsoft.Extensions.Primitives.StringValues(response.Headers["X-NxGen-Version"]));
 			}
 			else
 			{
@@ -204,7 +204,7 @@ namespace HMX.HASSActron.Controllers
 			return contentResult;
 		}
 
-		[Route("activate")]
+		[Route("/")]
 		[HttpDelete]
 		public async Task<IActionResult> ActivateDelete(string version, string device, string user_access_token)
 		{
@@ -220,11 +220,15 @@ namespace HMX.HASSActron.Controllers
 
 			Logging.WriteDebugLog("DeviceController.ActivateDelete() Client: {0}:{1} DELETE http://{2}", HttpContext.Connection.RemoteIpAddress.ToString(), HttpContext.Connection.RemotePort.ToString(), strHost + strPage);
 
+			HttpContext.Response.Headers.Add("Pragma", new Microsoft.Extensions.Primitives.StringValues("no-cache"));
+			HttpContext.Response.Headers.Add("Cache-Control", new Microsoft.Extensions.Primitives.StringValues("no-cache"));
+			HttpContext.Response.Headers.Add("Expires", new Microsoft.Extensions.Primitives.StringValues("-1"));
+
 			response = await Proxy.ForwardRequestToOriginalWebService("DELETE", strUserAgent, strHost, strPage);
 			if (response.ProxySuccessful)
 			{
 				contentResult = new ContentResult();
-				contentResult.ContentType = "application/json";
+				contentResult.ContentType = "application/json; charset=utf-8";
 				contentResult.StatusCode = (int)response.ResponseCode;
 				contentResult.Content = response.Response;
 			}
