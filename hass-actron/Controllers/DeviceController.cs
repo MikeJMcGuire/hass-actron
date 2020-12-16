@@ -161,7 +161,6 @@ namespace HMX.HASSActron.Controllers
 		}
 
 		[Route("activate")]
-		[HttpGet]
 		public async Task<IActionResult> Activate(string version, string device, string user_access_token)
 		{
 			ContentResult contentResult;
@@ -171,8 +170,8 @@ namespace HMX.HASSActron.Controllers
 			Logging.WriteDebugLog("DeviceController.Activate() Client: {0}:{1}", HttpContext.Connection.RemoteIpAddress.ToString(), HttpContext.Connection.RemotePort.ToString());
 
 			strUserAgent = HttpContext.Request.Headers["User-Agent"];
-			strHost = Request.Host.Host;
-			strPage = string.Format("rest/v{0}/block/{1}?user_access_token={2}", version, device, user_access_token);
+			strHost = string.Format("http://{0}", Request.Host.Host);
+			strPage = string.Format("/rest/v{0}/block/{1}?user_access_token={2}", version, device, user_access_token);
 
 			Logging.WriteDebugLog("DeviceController.Activate() Client: {0}:{1} GET {2}", HttpContext.Connection.RemoteIpAddress.ToString(), HttpContext.Connection.RemotePort.ToString(), strHost + strPage);
 
@@ -204,8 +203,8 @@ namespace HMX.HASSActron.Controllers
 			Logging.WriteDebugLog("DeviceController.ActivateDelete() Client: {0}:{1}", HttpContext.Connection.RemoteIpAddress.ToString(), HttpContext.Connection.RemotePort.ToString());
 
 			strUserAgent = HttpContext.Request.Headers["User-Agent"];
-			strHost = Request.Host.Host;
-			strPage = string.Format("rest/v{0}/block/{1}?user_access_token={2}", version, device, user_access_token);
+			strHost = string.Format("http://{0}", Request.Host.Host);
+			strPage = string.Format("/rest/v{0}/block/{1}?user_access_token={2}", version, device, user_access_token);
 
 			Logging.WriteDebugLog("DeviceController.ActivateDelete() Client: {0}:{1} DELETE {2}", HttpContext.Connection.RemoteIpAddress.ToString(), HttpContext.Connection.RemotePort.ToString(), strHost + strPage);
 
