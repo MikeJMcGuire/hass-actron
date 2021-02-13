@@ -5,7 +5,6 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - Updated package versions.
-- Chaanged to non-root user for execution.
 
 ## [v0.96] - 2021-02-10
 

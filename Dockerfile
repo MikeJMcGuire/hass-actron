@@ -15,8 +15,6 @@ FROM build AS publish
 RUN dotnet publish hass-actron.csproj -c Release -o /app
 
 FROM base AS final
-RUN addgroup --system --gid 1000 dotnet && adduser --system --uid 1000 --ingroup dotnet --shell /bin/sh dotnet
 WORKDIR /app
 COPY --from=publish /app .
-USER 1000
 ENTRYPOINT ["dotnet", "hass-actron.dll"]
