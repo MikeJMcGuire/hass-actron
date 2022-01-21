@@ -21,7 +21,7 @@ If you add the local DNS entry for updates.lx-cloud.com, it will prevent the Act
 
 If you have any issues, powering off the AC (generally at the circuit breaker/mains) and back on again will reboot the Actron Connect module. Sometimes it caches old DNS entries.
 
-Home Assistant AddOn Repository: https://github.com/MikeJMcGuire/HASSAddons
+Home Assistant AddOn Repository: https://github.com/MikeJMcGuire/HASSAddons.
 
 ## Configuration
 ### MQTTBroker: string
