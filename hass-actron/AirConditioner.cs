@@ -9,11 +9,15 @@ namespace HMX.HASSActron
 {
 	public class AirConditioner
 	{
+		// Fix: Relook at data supression. Break timer early if expected data received.
+
+		// Static
 		private static Dictionary<string, AirConditioner> _dUnits = new Dictionary<string, AirConditioner>();
 		private static string _strDeviceName = "Air Conditioner";
 		private static string _strDeviceNameMQTT = "Actron Air Conditioner";
 		private static int _iLastUpdateThreshold = 10; // Minutes
 
+		// Instance
 		private AirConditionerData _airConditionerData;
 		private AirConditionerCommand _airConditionerCommand = new AirConditionerCommand();
 		private object _oLockCommand = new object();
@@ -464,7 +468,7 @@ namespace HMX.HASSActron
 				command.enabledZones = _airConditionerCommand.enabledZones;
 			}
 
-			MQTT.SendMessage("actron/aircon/mode", (mode != AirConditionerMode.None ? Enum.GetName(typeof(ModeMQTT), mode).ToLower() : "off"));
+			MQTT.SendMessage(string.Format("actron/aircon/{0}/mode", _strUnit), (mode != AirConditionerMode.None ? Enum.GetName(typeof(ModeMQTT), mode).ToLower() : "off"));
 
 			PostCommand(lRequestId, "System", command);
 		}
@@ -494,7 +498,7 @@ namespace HMX.HASSActron
 				command.enabledZones = _airConditionerCommand.enabledZones;
 			}
 
-			MQTT.SendMessage("actron/aircon/fanmode", Enum.GetName(typeof(FanSpeed), speed).ToLower());
+			MQTT.SendMessage(string.Format("actron/aircon/{0}/fanmode", _strUnit), Enum.GetName(typeof(FanSpeed), speed).ToLower());
 
 			PostCommand(lRequestId, "System", command);
 		}
@@ -532,7 +536,7 @@ namespace HMX.HASSActron
 
 					command.enabledZones = string.Format("{0},{1},{2},{3},{4},{5},{6},{7}", strZones[0], strZones[1], strZones[2], strZones[3], strZones[4], strZones[5], strZones[6], strZones[7]);
 
-					MQTT.SendMessage(string.Format("actron/aircon/zone{0}", iZone), bOn ? "ON" : "OFF");
+					MQTT.SendMessage(string.Format("actron/aircon/{0}/zone{1}", _strUnit, iZone), bOn ? "ON" : "OFF");
 				}
 			}
 
@@ -564,7 +568,7 @@ namespace HMX.HASSActron
 				command.enabledZones = _airConditionerCommand.enabledZones;
 			}
 
-			MQTT.SendMessage("actron/aircon/settemperature", command.tempTarget.ToString());
+			MQTT.SendMessage(string.Format("actron/aircon/{0}/settemperature", _strUnit), command.tempTarget.ToString());
 
 			PostCommand(lRequestId, "System", command);
 		}

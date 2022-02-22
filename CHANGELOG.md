@@ -6,6 +6,9 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Added support for multiple ActronConnect units.
 
+### Changed
+- Changed MQTT topics to include a unit identifier. This should not impact your MQTT device, unless you're directly sending MQTT commands.
+
 ## [v2021.12.0] - 2021-12-01
 
 ### Added
