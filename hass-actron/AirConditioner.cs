@@ -12,6 +12,7 @@ namespace HMX.HASSActron
 		private static Dictionary<string, AirConditioner> _dUnits = new Dictionary<string, AirConditioner>();
 		private static string _strDeviceName = "Air Conditioner";
 		private static string _strDeviceNameMQTT = "Actron Air Conditioner";
+		private static int _iLastUpdateThreshold = 10; // Minutes
 
 		private AirConditionerData _airConditionerData;
 		private AirConditionerCommand _airConditionerCommand = new AirConditionerCommand();
@@ -25,7 +26,7 @@ namespace HMX.HASSActron
 		private DateTime _dtLastCommand = DateTime.MinValue;
 		private int _iSuppressTimer = 8; // Seconds
 		private Timer _timerPoll;
-		private string _strUnit;
+		private string _strUnit, _strClientId;
 
 		public Dictionary<int, Zone> Zones
 		{
@@ -56,16 +57,23 @@ namespace HMX.HASSActron
 		{
 			get { return _eventCommand; }
 		}
-		/*
-		public static void Update(object oState)
+
+		public string ClientId
 		{
-			// fix move to per device status
-			if (DateTime.Now >= AirConditioner.LastUpdate.AddMinutes(_iLastUpdateThreshold))
-				SendMessage(string.Format("{0}/status", _strClientId.ToLower()), "offline");
-			else
-				SendMessage(string.Format("{0}/status", _strClientId.ToLower()), "online");
+			get { return _strClientId; }
 		}
-		*/
+
+		public static void MQTTUpdate()
+		{
+			foreach (AirConditioner unit in _dUnits.Values)
+			{
+				if (DateTime.Now >= unit.LastUpdate.AddMinutes(_iLastUpdateThreshold))
+					MQTT.SendMessage(string.Format("{0}/status", unit.ClientId), "offline");
+				else
+					MQTT.SendMessage(string.Format("{0}/status", unit.ClientId), "online");
+			}
+		}
+		
 
 		public static bool Configure(IConfigurationRoot configuration)
 		{
@@ -111,20 +119,27 @@ namespace HMX.HASSActron
 
 			try
 			{
-				// Fix
 				foreach (IConfigurationSection zoneConfig in configuration.GetSection("Zones").GetChildren())
 				{
 					zone = new Zone(zoneConfig.GetValue<string>("Name"), zoneConfig.GetValue<int>("Id"));
 
-					Logging.WriteDebugLog("AirConditioner.AirConditioner() Zone: {0}, Id: {1}", zone.Name, zone.Id);
-
-					_dZones.Add(zone.Id, zone);
-
-					if (_dZones.Count > 8)
+					if (zone.Id > (iUnitIndex * 8) && zone.Id <= ((iUnitIndex + 1) * 8))
 					{
-						Logging.WriteDebugLog("AirConditioner.AirConditioner() Maximum Zones Reached (8)");
-						break;
-					}
+						Logging.WriteDebugLog("AirConditioner.AirConditioner() Zone: {0}, Id: {1}", zone.Name, zone.Id);
+
+						_dZones.Add(zone.Id, zone);
+
+						if (_dZones.Count > 8)
+						{
+							Logging.WriteDebugLog("AirConditioner.AirConditioner() Maximum Zones Reached (8)");
+							break;
+						}
+					}					
+				}
+
+				if (_dZones.Count == 8)
+				{
+					Logging.WriteDebugLog("AirConditioner.AirConditioner() No zones defined for this unit (Zones {0} - {1})", (iUnitIndex * 8), (iUnitIndex + 1) * 8);
 				}
 			}
 			catch (Exception eException)
@@ -132,18 +147,19 @@ namespace HMX.HASSActron
 				Logging.WriteDebugLogError("AirConditioner.AirConditioner()", eException, "Unable to read zones.");
 			}
 
-			// fix move to per device status
 			if (_strUnit == "Default")
 			{
-				MQTT.SendMessage("homeassistant/climate/actronaircon/config", "{{\"name\":\"{1}\",\"unique_id\":\"{0}-AC\",\"device\":{{\"identifiers\":[\"{0}\"],\"name\":\"{2}\",\"model\":\"Add-On\",\"manufacturer\":\"ActronAir\"}},\"modes\":[\"off\",\"auto\",\"cool\",\"fan_only\",\"heat\"],\"fan_modes\":[\"high\",\"medium\",\"low\"],\"mode_command_topic\":\"actron/aircon/Default/mode/set\",\"temperature_command_topic\":\"actron/aircon/Default/temperature/set\",\"fan_mode_command_topic\":\"actron/aircon/Default/fan/set\",\"min_temp\":\"12\",\"max_temp\":\"30\",\"temp_step\":\"0.5\",\"fan_mode_state_topic\":\"actron/aircon/Default/fanmode\",\"action_topic\":\"actron/aircon/Default/compressor\",\"temperature_state_topic\":\"actron/aircon/Default/settemperature\",\"mode_state_topic\":\"actron/aircon/Default/mode\",\"current_temperature_topic\":\"actron/aircon/Default/temperature\",\"availability_topic\":\"{0}/status\"}}", Service.ServiceName.ToLower(), _strDeviceName, _strDeviceNameMQTT);
+				_strClientId = Service.ServiceName.ToLower();
+
+				MQTT.SendMessage("homeassistant/climate/actronaircon/config", "{{\"name\":\"{1}\",\"unique_id\":\"{0}-AC\",\"device\":{{\"identifiers\":[\"{0}\"],\"name\":\"{2}\",\"model\":\"Add-On\",\"manufacturer\":\"ActronAir\"}},\"modes\":[\"off\",\"auto\",\"cool\",\"fan_only\",\"heat\"],\"fan_modes\":[\"high\",\"medium\",\"low\"],\"mode_command_topic\":\"actron/aircon/Default/mode/set\",\"temperature_command_topic\":\"actron/aircon/Default/temperature/set\",\"fan_mode_command_topic\":\"actron/aircon/Default/fan/set\",\"min_temp\":\"12\",\"max_temp\":\"30\",\"temp_step\":\"0.5\",\"fan_mode_state_topic\":\"actron/aircon/Default/fanmode\",\"action_topic\":\"actron/aircon/Default/compressor\",\"temperature_state_topic\":\"actron/aircon/Default/settemperature\",\"mode_state_topic\":\"actron/aircon/Default/mode\",\"current_temperature_topic\":\"actron/aircon/Default/temperature\",\"availability_topic\":\"{0}/status\"}}", _strClientId, _strDeviceName, _strDeviceNameMQTT);
 
 				foreach (int iZone in _dZones.Keys)
 				{
-					MQTT.SendMessage(string.Format("homeassistant/switch/actron/airconzone{0}/config", iZone), "{{\"name\":\"{0} Zone\",\"unique_id\":\"{2}-z{1}s\",\"device\":{{\"identifiers\":[\"{2}\"],\"name\":\"{3}\",\"model\":\"Add-On\",\"manufacturer\":\"ActronAir\"}},\"state_topic\":\"actron/aircon/Default/zone{1}\",\"command_topic\":\"actron/aircon/Default/zone{1}/set\",\"payload_on\":\"ON\",\"payload_off\":\"OFF\",\"state_on\":\"ON\",\"state_off\":\"OFF\",\"availability_topic\":\"{2}/status\"}}", _dZones[iZone].Name, iZone, Service.ServiceName.ToLower(), _strDeviceNameMQTT);
+					MQTT.SendMessage(string.Format("homeassistant/switch/actron/airconzone{0}/config", iZone), "{{\"name\":\"{0} Zone\",\"unique_id\":\"{2}-z{1}s\",\"device\":{{\"identifiers\":[\"{2}\"],\"name\":\"{3}\",\"model\":\"Add-On\",\"manufacturer\":\"ActronAir\"}},\"state_topic\":\"actron/aircon/Default/zone{1}\",\"command_topic\":\"actron/aircon/Default/zone{1}/set\",\"payload_on\":\"ON\",\"payload_off\":\"OFF\",\"state_on\":\"ON\",\"state_off\":\"OFF\",\"availability_topic\":\"{2}/status\"}}", _dZones[iZone].Name, iZone, _strClientId, _strDeviceNameMQTT);
 					MQTT.Subscribe("actron/aircon/Default/zone{0}/set", iZone);
 
 					if (Service.RegisterZoneTemperatures)
-						MQTT.SendMessage(string.Format("homeassistant/sensor/actron/airconzone{0}/config", iZone), "{{\"name\":\"{0}\",\"unique_id\":\"{2}-z{1}t\",\"device\":{{\"identifiers\":[\"{2}\"],\"name\":\"{3}\",\"model\":\"Add-On\",\"manufacturer\":\"ActronAir\"}},\"state_topic\":\"actron/aircon/Default/zone{1}/temperature\",\"unit_of_measurement\":\"\u00B0C\",\"availability_topic\":\"{2}/status\"}}", _dZones[iZone].Name, iZone, Service.ServiceName.ToLower(), _strDeviceNameMQTT);
+						MQTT.SendMessage(string.Format("homeassistant/sensor/actron/airconzone{0}/config", iZone), "{{\"name\":\"{0}\",\"unique_id\":\"{2}-z{1}t\",\"device\":{{\"identifiers\":[\"{2}\"],\"name\":\"{3}\",\"model\":\"Add-On\",\"manufacturer\":\"ActronAir\"}},\"state_topic\":\"actron/aircon/Default/zone{1}/temperature\",\"unit_of_measurement\":\"\u00B0C\",\"availability_topic\":\"{2}/status\"}}", _dZones[iZone].Name, iZone, _strClientId, _strDeviceNameMQTT);
 					else
 						MQTT.SendMessage(string.Format("homeassistant/sensor/actron/airconzone{0}/config", iZone), "{{}}"); // Clear existing devices
 				}
@@ -154,15 +170,17 @@ namespace HMX.HASSActron
 			}
 			else
 			{
-				MQTT.SendMessage(string.Format("homeassistant/climate/actronaircon/{0}/config", _strUnit), "{{\"name\":\"{1} {3}\",\"unique_id\":\"{0}-{3}-AC\",\"device\":{{\"identifiers\":[\"{0}-{3}\"],\"name\":\"{2}\",\"model\":\"Add-On\",\"manufacturer\":\"ActronAir\"}},\"modes\":[\"off\",\"auto\",\"cool\",\"fan_only\",\"heat\"],\"fan_modes\":[\"high\",\"medium\",\"low\"],\"mode_command_topic\":\"actron/aircon/{3}/mode/set\",\"temperature_command_topic\":\"actron/aircon/{3}/temperature/set\",\"fan_mode_command_topic\":\"actron/aircon/{3}/fan/set\",\"min_temp\":\"12\",\"max_temp\":\"30\",\"temp_step\":\"0.5\",\"fan_mode_state_topic\":\"actron/aircon/{3}/fanmode\",\"action_topic\":\"actron/aircon/{3}/compressor\",\"temperature_state_topic\":\"actron/aircon/{3}/settemperature\",\"mode_state_topic\":\"actron/aircon/{3}/mode\",\"current_temperature_topic\":\"actron/aircon/{3}/temperature\",\"availability_topic\":\"{0}/status\"}}", Service.ServiceName.ToLower(), _strDeviceName, _strDeviceNameMQTT, _strUnit);
+				_strClientId = Service.ServiceName.ToLower() + _strUnit.ToLower();
+
+				MQTT.SendMessage(string.Format("homeassistant/climate/actronaircon/{0}/config", _strUnit), "{{\"name\":\"{1} {3}\",\"unique_id\":\"{0}-{3}-AC\",\"device\":{{\"identifiers\":[\"{0}\"],\"name\":\"{2}\",\"model\":\"Add-On\",\"manufacturer\":\"ActronAir\"}},\"modes\":[\"off\",\"auto\",\"cool\",\"fan_only\",\"heat\"],\"fan_modes\":[\"high\",\"medium\",\"low\"],\"mode_command_topic\":\"actron/aircon/{3}/mode/set\",\"temperature_command_topic\":\"actron/aircon/{3}/temperature/set\",\"fan_mode_command_topic\":\"actron/aircon/{3}/fan/set\",\"min_temp\":\"12\",\"max_temp\":\"30\",\"temp_step\":\"0.5\",\"fan_mode_state_topic\":\"actron/aircon/{3}/fanmode\",\"action_topic\":\"actron/aircon/{3}/compressor\",\"temperature_state_topic\":\"actron/aircon/{3}/settemperature\",\"mode_state_topic\":\"actron/aircon/{3}/mode\",\"current_temperature_topic\":\"actron/aircon/{3}/temperature\",\"availability_topic\":\"{0}/status\"}}", _strClientId, _strDeviceName, _strDeviceNameMQTT, _strUnit);
 
 				foreach (int iZone in _dZones.Keys)
 				{
-					MQTT.SendMessage(string.Format("homeassistant/switch/actron/{0}/airconzone{1}/config", _strUnit, iZone), "{{\"name\":\"{0} Zone\",\"unique_id\":\"{2}-{4}-z{1}s\",\"device\":{{\"identifiers\":[\"{2}-{4}\"],\"name\":\"{3}\",\"model\":\"Add-On\",\"manufacturer\":\"ActronAir\"}},\"state_topic\":\"actron/aircon/{4}/zone{1}\",\"command_topic\":\"actron/aircon/{4}/zone{1}/set\",\"payload_on\":\"ON\",\"payload_off\":\"OFF\",\"state_on\":\"ON\",\"state_off\":\"OFF\",\"availability_topic\":\"{2}/status\"}}", _dZones[iZone].Name, iZone, Service.ServiceName.ToLower(), _strDeviceNameMQTT, _strUnit);
+					MQTT.SendMessage(string.Format("homeassistant/switch/actron/{0}/airconzone{1}/config", _strUnit, iZone), "{{\"name\":\"{0} Zone\",\"unique_id\":\"{2}-{4}-z{1}s\",\"device\":{{\"identifiers\":[\"{2}\"],\"name\":\"{3}\",\"model\":\"Add-On\",\"manufacturer\":\"ActronAir\"}},\"state_topic\":\"actron/aircon/{4}/zone{1}\",\"command_topic\":\"actron/aircon/{4}/zone{1}/set\",\"payload_on\":\"ON\",\"payload_off\":\"OFF\",\"state_on\":\"ON\",\"state_off\":\"OFF\",\"availability_topic\":\"{2}/status\"}}", _dZones[iZone].Name, iZone, _strClientId, _strDeviceNameMQTT, _strUnit);
 					MQTT.Subscribe("actron/aircon/{0}/zone{1}/set", _strUnit, iZone);
 
 					if (Service.RegisterZoneTemperatures)
-						MQTT.SendMessage(string.Format("homeassistant/sensor/actron/{0}/airconzone{1}/config", _strUnit, iZone), "{{\"name\":\"{0}\",\"unique_id\":\"{2}-{4}-z{1}t\",\"device\":{{\"identifiers\":[\"{2}-{4}\"],\"name\":\"{3}\",\"model\":\"Add-On\",\"manufacturer\":\"ActronAir\"}},\"state_topic\":\"actron/aircon/{4}/zone{1}/temperature\",\"unit_of_measurement\":\"\u00B0C\",\"availability_topic\":\"{2}/status\"}}", _dZones[iZone].Name, iZone, Service.ServiceName.ToLower(), _strDeviceNameMQTT, _strUnit);
+						MQTT.SendMessage(string.Format("homeassistant/sensor/actron/{0}/airconzone{1}/config", _strUnit, iZone), "{{\"name\":\"{0}\",\"unique_id\":\"{2}-{4}-z{1}t\",\"device\":{{\"identifiers\":[\"{2}\"],\"name\":\"{3}\",\"model\":\"Add-On\",\"manufacturer\":\"ActronAir\"}},\"state_topic\":\"actron/aircon/{4}/zone{1}/temperature\",\"unit_of_measurement\":\"\u00B0C\",\"availability_topic\":\"{2}/status\"}}", _dZones[iZone].Name, iZone, _strClientId, _strDeviceNameMQTT, _strUnit);
 					else
 						MQTT.SendMessage(string.Format("homeassistant/sensor/actron/{0}/airconzone{1}/config", _strUnit, iZone), "{{}}"); // Clear existing devices
 				}
