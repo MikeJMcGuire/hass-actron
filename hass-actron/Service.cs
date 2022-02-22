@@ -109,7 +109,7 @@ namespace HMX.HASSActron
 				return;
 			}
 
-			switch (strTopic)
+			switch (strNewTopic)
 			{
 				case "actron/aircon/zone1/set":
 					AirConditioner.ChangeZone(strUnit, lRequestId, 1, strPayload == "ON" ? true : false);
