@@ -20,7 +20,6 @@ namespace HMX.HASSActron
 			get { return _bForwardToOriginalWebService; }
 		}
 
-
 		public static bool RegisterZoneTemperatures
 		{
 			get { return _bRegisterZoneTemperatures; }

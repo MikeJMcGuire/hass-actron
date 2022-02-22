@@ -60,6 +60,20 @@ namespace HMX.HASSActron
 
 			try
 			{
+				foreach (IConfigurationSection unit in configuration.GetSection("MultipleUnits")?.GetChildren())
+				{
+					Logging.WriteDebugLog("AirConditioner.Configure() Unit: {0}", unit.Value);
+				}
+			}
+			catch (Exception eException)
+			{
+				Logging.WriteDebugLogError("AirConditioner.Configure()", eException, "Unable to read units.");
+
+				return false;
+			}
+
+			try
+			{
 				foreach (IConfigurationSection zoneConfig in configuration.GetSection("Zones").GetChildren())
 				{
 					zone = new Zone(zoneConfig.GetValue<string>("Name"), zoneConfig.GetValue<int>("Id"));

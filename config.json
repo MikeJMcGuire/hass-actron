@@ -37,6 +37,7 @@
     "MQTTPassword": "str?",
     "MQTTBroker": "str",
     "MQTTTLS": "bool?",
+    "MultipleUnits": [ "str?" ],
     "RegisterZoneTemperatures": "bool?",
     "ForwardToOriginalWebService": "bool?",
     "Zones": [
