@@ -219,7 +219,7 @@ namespace HMX.HASSActron
 			int iWaitTime = 5; // Minutes
 
 			if (_airConditionerData.dtLastUpdate < DateTime.Now.Subtract(TimeSpan.FromMinutes(iWaitTime)))
-				Logging.WriteDebugLog("AirConditioner.CheckLastUpdate() No communication with Actron unit for at least {0} minutes. Check Actron Connect unit can connect to the network and locate the add-on.", iWaitTime);
+				Logging.WriteDebugLog("AirConditioner.CheckLastUpdate() No communication with Actron unit ({0}) for at least {1} minutes. Check Actron Connect unit can connect to the network and locate the add-on.", _strUnit, iWaitTime);
 		}
 
 		public static void PostData(string strUnit, AirConditionerData data)
