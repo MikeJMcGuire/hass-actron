@@ -115,6 +115,7 @@ namespace HMX.HASSActron
 
 		public static void Update(object oState)
 		{
+			// fix move to per device status
 			if (DateTime.Now >= AirConditioner.LastUpdate.AddMinutes(_iLastUpdateThreshold))
 				SendMessage(string.Format("{0}/status", _strClientId.ToLower()), "offline");
 			else
