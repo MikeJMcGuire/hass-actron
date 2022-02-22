@@ -220,7 +220,7 @@ namespace HMX.HASSActron
 
 		public static void PostData(string strUnit, AirConditionerData data)
 		{
-			Logging.WriteDebugLog("AirConditioner.PostData()");
+			Logging.WriteDebugLog("AirConditioner.PostData() Unit: {0}", strUnit);
 
 			if (_dUnits.ContainsKey(strUnit))
 				_dUnits[strUnit].PostData(data);
@@ -260,19 +260,19 @@ namespace HMX.HASSActron
 					_airConditionerData.iFanSpeed = data.iFanSpeed;
 					_airConditionerData.iMode = data.iMode;					
 
-					MQTT.SendMessage("actron/aircon/fanmode", Enum.GetName(typeof(FanSpeed), _airConditionerData.iFanSpeed).ToLower());
-					MQTT.SendMessage("actron/aircon/mode", (_airConditionerData.bOn ? Enum.GetName(typeof(ModeMQTT), _airConditionerData.iMode).ToLower() : "off"));
-					MQTT.SendMessage("actron/aircon/settemperature", _airConditionerData.dblSetTemperature.ToString());
+					MQTT.SendMessage(string.Format("actron/aircon/{0}/fanmode", _strUnit), Enum.GetName(typeof(FanSpeed), _airConditionerData.iFanSpeed).ToLower());
+					MQTT.SendMessage(string.Format("actron/aircon/{0}/mode", _strUnit), (_airConditionerData.bOn ? Enum.GetName(typeof(ModeMQTT), _airConditionerData.iMode).ToLower() : "off"));
+					MQTT.SendMessage(string.Format("actron/aircon/{0}/settemperature", _strUnit), _airConditionerData.dblSetTemperature.ToString());
 
 					// Need to move to an array instead of 8 x boolean.
-					if (_dZones.Count >= 1) MQTT.SendMessage("actron/aircon/zone1", _airConditionerData.bZone1 ? "ON" : "OFF");
-					if (_dZones.Count >= 2) MQTT.SendMessage("actron/aircon/zone2", _airConditionerData.bZone2 ? "ON" : "OFF");
-					if (_dZones.Count >= 3) MQTT.SendMessage("actron/aircon/zone3", _airConditionerData.bZone3 ? "ON" : "OFF");
-					if (_dZones.Count >= 4) MQTT.SendMessage("actron/aircon/zone4", _airConditionerData.bZone4 ? "ON" : "OFF");
-					if (_dZones.Count >= 5) MQTT.SendMessage("actron/aircon/zone5", _airConditionerData.bZone5 ? "ON" : "OFF");
-					if (_dZones.Count >= 6) MQTT.SendMessage("actron/aircon/zone6", _airConditionerData.bZone6 ? "ON" : "OFF");
-					if (_dZones.Count >= 7) MQTT.SendMessage("actron/aircon/zone7", _airConditionerData.bZone7 ? "ON" : "OFF");
-					if (_dZones.Count >= 8) MQTT.SendMessage("actron/aircon/zone8", _airConditionerData.bZone8 ? "ON" : "OFF");
+					if (_dZones.Count >= 1) MQTT.SendMessage(string.Format("actron/aircon/{0}/zone1", _strUnit), _airConditionerData.bZone1 ? "ON" : "OFF");
+					if (_dZones.Count >= 2) MQTT.SendMessage(string.Format("actron/aircon/{0}/zone2", _strUnit), _airConditionerData.bZone2 ? "ON" : "OFF");
+					if (_dZones.Count >= 3) MQTT.SendMessage(string.Format("actron/aircon/{0}/zone3", _strUnit), _airConditionerData.bZone3 ? "ON" : "OFF");
+					if (_dZones.Count >= 4) MQTT.SendMessage(string.Format("actron/aircon/{0}/zone4", _strUnit), _airConditionerData.bZone4 ? "ON" : "OFF");
+					if (_dZones.Count >= 5) MQTT.SendMessage(string.Format("actron/aircon/{0}/zone5", _strUnit), _airConditionerData.bZone5 ? "ON" : "OFF");
+					if (_dZones.Count >= 6) MQTT.SendMessage(string.Format("actron/aircon/{0}/zone6", _strUnit), _airConditionerData.bZone6 ? "ON" : "OFF");
+					if (_dZones.Count >= 7) MQTT.SendMessage(string.Format("actron/aircon/{0}/zone7", _strUnit), _airConditionerData.bZone7 ? "ON" : "OFF");
+					if (_dZones.Count >= 8) MQTT.SendMessage(string.Format("actron/aircon/{0}/zone8", _strUnit), _airConditionerData.bZone8 ? "ON" : "OFF");
 				}
 			}
 
@@ -295,40 +295,40 @@ namespace HMX.HASSActron
 				_airConditionerData.dblZone8Temperature = data.dblZone8Temperature;
 				_airConditionerData.strErrorCode = data.strErrorCode;
 
-				MQTT.SendMessage("actron/aircon/temperature", _airConditionerData.dblRoomTemperature.ToString());
+				MQTT.SendMessage(string.Format("actron/aircon/{0}/temperature", _strUnit), _airConditionerData.dblRoomTemperature.ToString());
 
 				if (Service.RegisterZoneTemperatures)
 				{
-					if (_dZones.Count >= 1) MQTT.SendMessage("actron/aircon/zone1/temperature", _airConditionerData.dblZone1Temperature.ToString());
-					if (_dZones.Count >= 2) MQTT.SendMessage("actron/aircon/zone2/temperature", _airConditionerData.dblZone2Temperature.ToString());
-					if (_dZones.Count >= 3) MQTT.SendMessage("actron/aircon/zone3/temperature", _airConditionerData.dblZone3Temperature.ToString());
-					if (_dZones.Count >= 4) MQTT.SendMessage("actron/aircon/zone4/temperature", _airConditionerData.dblZone4Temperature.ToString());
-					if (_dZones.Count >= 5) MQTT.SendMessage("actron/aircon/zone5/temperature", _airConditionerData.dblZone5Temperature.ToString());
-					if (_dZones.Count >= 6) MQTT.SendMessage("actron/aircon/zone6/temperature", _airConditionerData.dblZone6Temperature.ToString());
-					if (_dZones.Count >= 7) MQTT.SendMessage("actron/aircon/zone7/temperature", _airConditionerData.dblZone7Temperature.ToString());
-					if (_dZones.Count >= 8) MQTT.SendMessage("actron/aircon/zone8/temperature", _airConditionerData.dblZone8Temperature.ToString());
+					if (_dZones.Count >= 1) MQTT.SendMessage(string.Format("actron/aircon/{0}/zone1/temperature", _strUnit), _airConditionerData.dblZone1Temperature.ToString());
+					if (_dZones.Count >= 2) MQTT.SendMessage(string.Format("actron/aircon/{0}/zone2/temperature", _strUnit), _airConditionerData.dblZone2Temperature.ToString());
+					if (_dZones.Count >= 3) MQTT.SendMessage(string.Format("actron/aircon/{0}/zone3/temperature", _strUnit), _airConditionerData.dblZone3Temperature.ToString());
+					if (_dZones.Count >= 4) MQTT.SendMessage(string.Format("actron/aircon/{0}/zone4/temperature", _strUnit), _airConditionerData.dblZone4Temperature.ToString());
+					if (_dZones.Count >= 5) MQTT.SendMessage(string.Format("actron/aircon/{0}/zone5/temperature", _strUnit), _airConditionerData.dblZone5Temperature.ToString());
+					if (_dZones.Count >= 6) MQTT.SendMessage(string.Format("actron/aircon/{0}/zone6/temperature", _strUnit), _airConditionerData.dblZone6Temperature.ToString());
+					if (_dZones.Count >= 7) MQTT.SendMessage(string.Format("actron/aircon/{0}/zone7/temperature", _strUnit), _airConditionerData.dblZone7Temperature.ToString());
+					if (_dZones.Count >= 8) MQTT.SendMessage(string.Format("actron/aircon/{0}/zone8/temperature", _strUnit), _airConditionerData.dblZone8Temperature.ToString());
 				}
 
 				switch (_airConditionerData.iCompressorActivity)
 				{
 					case 0:
-						MQTT.SendMessage("actron/aircon/compressor", "heating");
+						MQTT.SendMessage(string.Format("actron/aircon/{0}/compressor", _strUnit), "heating");
 						break;
 
 					case 1:
-						MQTT.SendMessage("actron/aircon/compressor", "cooling");
+						MQTT.SendMessage(string.Format("actron/aircon/{0}/compressor", _strUnit), "cooling");
 						break;
 
 					case 2:
 						if (_airConditionerData.bOn)
-							MQTT.SendMessage("actron/aircon/compressor", "idle");
+							MQTT.SendMessage(string.Format("actron/aircon/{0}/compressor", _strUnit), "idle");
 						else
-							MQTT.SendMessage("actron/aircon/compressor", "off");
+							MQTT.SendMessage(string.Format("actron/aircon/{0}/compressor", _strUnit), "off");
 
 						break;
 
 					default:
-						MQTT.SendMessage("actron/aircon/compressor", "off");
+						MQTT.SendMessage(string.Format("actron/aircon/{0}/compressor", _strUnit), "off");
 						break;
 				}
 			}
@@ -370,7 +370,7 @@ namespace HMX.HASSActron
 
 		public static AirConditionerCommand GetCommand(string strUnit, out string strCommandType)
 		{
-			Logging.WriteDebugLog("AirConditioner.GetCommand()");
+			Logging.WriteDebugLog("AirConditioner.GetCommand() Unit: {0}", strUnit);
 
 			if (_dUnits.ContainsKey(strUnit))
 				return _dUnits[strUnit].GetCommand(out strCommandType);
@@ -441,7 +441,7 @@ namespace HMX.HASSActron
 
 		public static void ChangeMode(string strUnit, long lRequestId, AirConditionerMode mode)
 		{
-
+			// fix
 		}
 
 		public void ChangeMode(long lRequestId, AirConditionerMode mode)
@@ -466,7 +466,7 @@ namespace HMX.HASSActron
 
 		public static void ChangeFanSpeed(string strUnit, long lRequestId, FanSpeed speed)
 		{
-
+			// fix
 		}
 
 		public void ChangeFanSpeed(long lRequestId, FanSpeed speed)
@@ -491,7 +491,7 @@ namespace HMX.HASSActron
 
 		public static void ChangeZone(string strUnit, long lRequestId, int iZone, bool bOn)
 		{
-
+			// fix
 		}
 
 		public void ChangeZone(long lRequestId, int iZone, bool bOn)
@@ -526,7 +526,7 @@ namespace HMX.HASSActron
 
 		public static void ChangeTemperature(string strUnit, long lRequestId, double dblTemperature)
 		{
-
+			// fix
 		}
 
 		public void ChangeTemperature(long lRequestId, double dblTemperature)
