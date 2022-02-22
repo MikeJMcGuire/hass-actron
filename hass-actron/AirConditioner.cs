@@ -441,7 +441,12 @@ namespace HMX.HASSActron
 
 		public static void ChangeMode(string strUnit, long lRequestId, AirConditionerMode mode)
 		{
-			// fix
+			Logging.WriteDebugLog("AirConditioner.ChangeMode() Unit: {0}", strUnit);
+
+			if (_dUnits.ContainsKey(strUnit))
+				_dUnits[strUnit].ChangeMode(lRequestId, mode);
+			else
+				_dUnits.First().Value.ChangeMode(lRequestId, mode);
 		}
 
 		public void ChangeMode(long lRequestId, AirConditionerMode mode)
@@ -466,7 +471,12 @@ namespace HMX.HASSActron
 
 		public static void ChangeFanSpeed(string strUnit, long lRequestId, FanSpeed speed)
 		{
-			// fix
+			Logging.WriteDebugLog("AirConditioner.ChangeFanSpeed() Unit: {0}", strUnit);
+
+			if (_dUnits.ContainsKey(strUnit))
+				_dUnits[strUnit].ChangeFanSpeed(lRequestId, speed);
+			else
+				_dUnits.First().Value.ChangeFanSpeed(lRequestId, speed);
 		}
 
 		public void ChangeFanSpeed(long lRequestId, FanSpeed speed)
@@ -491,7 +501,12 @@ namespace HMX.HASSActron
 
 		public static void ChangeZone(string strUnit, long lRequestId, int iZone, bool bOn)
 		{
-			// fix
+			Logging.WriteDebugLog("AirConditioner.ChangeZone() Unit: {0}", strUnit);
+
+			if (_dUnits.ContainsKey(strUnit))
+				_dUnits[strUnit].ChangeZone(lRequestId, iZone, bOn);
+			else
+				_dUnits.First().Value.ChangeZone(lRequestId, iZone, bOn);
 		}
 
 		public void ChangeZone(long lRequestId, int iZone, bool bOn)
@@ -526,7 +541,12 @@ namespace HMX.HASSActron
 
 		public static void ChangeTemperature(string strUnit, long lRequestId, double dblTemperature)
 		{
-			// fix
+			Logging.WriteDebugLog("AirConditioner.ChangeTemperature() Unit: {0}", strUnit);
+
+			if (_dUnits.ContainsKey(strUnit))
+				_dUnits[strUnit].ChangeTemperature(lRequestId, dblTemperature);
+			else
+				_dUnits.First().Value.ChangeTemperature(lRequestId, dblTemperature);
 		}
 
 		public void ChangeTemperature(long lRequestId, double dblTemperature)
