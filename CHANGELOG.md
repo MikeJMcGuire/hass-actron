@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [v2022.2.0] - 2022-2-22
+
+### Added
+- Added support for multiple ActronConnect units.
+
 ## [v2021.12.0] - 2021-12-01
 
 ### Added
