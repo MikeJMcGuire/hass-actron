@@ -43,7 +43,8 @@
     "Zones": [
       {
         "Name": "str",
-        "Id": "int"
+        "Id": "int",
+        "Unit": "str?"
       }
     ]
   },

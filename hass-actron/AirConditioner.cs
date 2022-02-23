@@ -16,7 +16,7 @@ namespace HMX.HASSActron
 		private static string _strDeviceName = "Air Conditioner";
 		private static string _strDeviceNameMQTT = "Actron Air Conditioner";
 		private static int _iLastUpdateThreshold = 10; // Minutes
-
+		private static string _strDefaultUnit = "Default";
 		// Instance
 		private AirConditionerData _airConditionerData;
 		private AirConditionerCommand _airConditionerCommand = new AirConditionerCommand();
@@ -102,16 +102,17 @@ namespace HMX.HASSActron
 			if (_dUnits.Count > 0)
 				Logging.WriteDebugLog("AirConditioner.Configure() Multiple Unit Mode");
 			else
-				_dUnits.Add("Default", new AirConditioner("Default", 0, configuration));
+				_dUnits.Add(_strDefaultUnit, new AirConditioner(_strDefaultUnit, 0, configuration));
 
 			return true;
 		}
 
 		public AirConditioner(string strUnit, int iUnitIndex, IConfigurationRoot configuration)
 		{
-			Zone zone; 
+			Zone zone;
+			string strZoneUnit;
 			
-			Logging.WriteDebugLog("AirConditioner.AirConditioner()");
+			Logging.WriteDebugLog("AirConditioner.AirConditioner() Unit: {0}", strUnit);
 
 			_eventCommand = new ManualResetEvent(false);
 			_strUnit = strUnit;
@@ -127,7 +128,9 @@ namespace HMX.HASSActron
 				{
 					zone = new Zone(zoneConfig.GetValue<string>("Name"), zoneConfig.GetValue<int>("Id"));
 
-					if (zone.Id > (iUnitIndex * 8) && zone.Id <= ((iUnitIndex + 1) * 8))
+					strZoneUnit = zoneConfig.GetValue<string>("Unit") ?? _strDefaultUnit;
+
+					if (strZoneUnit == _strUnit)
 					{
 						Logging.WriteDebugLog("AirConditioner.AirConditioner() Zone: {0}, Id: {1}", zone.Name, zone.Id);
 
@@ -143,7 +146,7 @@ namespace HMX.HASSActron
 
 				if (_dZones.Count == 0)
 				{
-					Logging.WriteDebugLog("AirConditioner.AirConditioner() No zones defined for this unit (Zones {0} - {1})", (iUnitIndex * 8), (iUnitIndex + 1) * 8);
+					Logging.WriteDebugLog("AirConditioner.AirConditioner() No zones defined for this unit");
 				}
 			}
 			catch (Exception eException)
@@ -151,7 +154,7 @@ namespace HMX.HASSActron
 				Logging.WriteDebugLogError("AirConditioner.AirConditioner()", eException, "Unable to read zones.");
 			}
 
-			if (_strUnit == "Default")
+			if (_strUnit == _strDefaultUnit)
 			{
 				_strClientId = Service.ServiceName.ToLower();
 
@@ -160,7 +163,7 @@ namespace HMX.HASSActron
 				foreach (int iZone in _dZones.Keys)
 				{
 					MQTT.SendMessage(string.Format("homeassistant/switch/actron/airconzone{0}/config", iZone), "{{\"name\":\"{0} Zone\",\"unique_id\":\"{2}-z{1}s\",\"device\":{{\"identifiers\":[\"{2}\"],\"name\":\"{3}\",\"model\":\"Add-On\",\"manufacturer\":\"ActronAir\"}},\"state_topic\":\"actron/aircon/Default/zone{1}\",\"command_topic\":\"actron/aircon/Default/zone{1}/set\",\"payload_on\":\"ON\",\"payload_off\":\"OFF\",\"state_on\":\"ON\",\"state_off\":\"OFF\",\"availability_topic\":\"{2}/status\"}}", _dZones[iZone].Name, iZone, _strClientId, _strDeviceNameMQTT);
-					MQTT.Subscribe("actron/aircon/Default/zone{0}/set", iZone);
+					MQTT.Subscribe("actron/aircon/{0}/zone{1}/set", _strUnit, iZone);
 
 					if (Service.RegisterZoneTemperatures)
 						MQTT.SendMessage(string.Format("homeassistant/sensor/actron/airconzone{0}/config", iZone), "{{\"name\":\"{0}\",\"unique_id\":\"{2}-z{1}t\",\"device\":{{\"identifiers\":[\"{2}\"],\"name\":\"{3}\",\"model\":\"Add-On\",\"manufacturer\":\"ActronAir\"}},\"state_topic\":\"actron/aircon/Default/zone{1}/temperature\",\"unit_of_measurement\":\"\u00B0C\",\"availability_topic\":\"{2}/status\"}}", _dZones[iZone].Name, iZone, _strClientId, _strDeviceNameMQTT);
@@ -168,9 +171,9 @@ namespace HMX.HASSActron
 						MQTT.SendMessage(string.Format("homeassistant/sensor/actron/airconzone{0}/config", iZone), "{{}}"); // Clear existing devices
 				}
 
-				MQTT.Subscribe("actron/aircon/Default/mode/set");
-				MQTT.Subscribe("actron/aircon/Default/fan/set");
-				MQTT.Subscribe("actron/aircon/Default/temperature/set");
+				MQTT.Subscribe("actron/aircon/{0}/mode/set", _strUnit);
+				MQTT.Subscribe("actron/aircon/{0}/fan/set", _strUnit);
+				MQTT.Subscribe("actron/aircon/{0}/temperature/set", _strUnit);
 			}
 			else
 			{
