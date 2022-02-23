@@ -38,7 +38,7 @@ If you set this option to true, any data/status received from the Actron will be
 
 ### MultipleUnits: string list
 If you have multiple Actron Connect units, you can use this option to specify the Unit/Block Id of each of the Actron Connect units. You can determine the Id by browsing to the IP address of each of the units. You will then need to update your zone configuration to specify which zones belong to each unit. Example:
-
+```
 Zones:
   - Name: Bedrooms
     Id: 1
@@ -52,3 +52,4 @@ Zones:
 MultipleUnits:
   - ACONNECT12345
   - ACONNECT67890
+```
