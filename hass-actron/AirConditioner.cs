@@ -141,7 +141,7 @@ namespace HMX.HASSActron
 					}					
 				}
 
-				if (_dZones.Count == 8)
+				if (_dZones.Count == 0)
 				{
 					Logging.WriteDebugLog("AirConditioner.AirConditioner() No zones defined for this unit (Zones {0} - {1})", (iUnitIndex * 8), (iUnitIndex + 1) * 8);
 				}
