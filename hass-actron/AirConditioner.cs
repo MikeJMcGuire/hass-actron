@@ -276,8 +276,6 @@ namespace HMX.HASSActron
 					MQTT.SendMessage(string.Format("actron/aircon/{0}/fanmode", _strUnit), Enum.GetName(typeof(FanSpeed), _airConditionerData.iFanSpeed).ToLower());
 					MQTT.SendMessage(string.Format("actron/aircon/{0}/mode", _strUnit), (_airConditionerData.bOn ? Enum.GetName(typeof(ModeMQTT), _airConditionerData.iMode).ToLower() : "off"));
 					MQTT.SendMessage(string.Format("actron/aircon/{0}/settemperature", _strUnit), _airConditionerData.dblSetTemperature.ToString());
-					MQTT.SendMessage(string.Format("actron/aircon/{0}/esp", _strUnit), _airConditionerData.bESPOn ? "ON" : "OFF");
-					MQTT.SendMessage(string.Format("actron/aircon/{0}/fancont", _strUnit), _airConditionerData.iFanContinuous == 0 ? "OFF" : "ON");
 
 					// Need to move to an array instead of 8 x boolean.
 					if (_dZones.Count >= 1) MQTT.SendMessage(string.Format("actron/aircon/{0}/zone1", _strUnit), _airConditionerData.bZone1 ? "ON" : "OFF");
@@ -311,6 +309,8 @@ namespace HMX.HASSActron
 				_airConditionerData.strErrorCode = data.strErrorCode;
 
 				MQTT.SendMessage(string.Format("actron/aircon/{0}/temperature", _strUnit), _airConditionerData.dblRoomTemperature.ToString());
+				MQTT.SendMessage(string.Format("actron/aircon/{0}/esp", _strUnit), _airConditionerData.bESPOn ? "ON" : "OFF");
+				MQTT.SendMessage(string.Format("actron/aircon/{0}/fancont", _strUnit), _airConditionerData.iFanContinuous == 0 ? "OFF" : "ON");
 
 				if (Service.RegisterZoneTemperatures)
 				{
