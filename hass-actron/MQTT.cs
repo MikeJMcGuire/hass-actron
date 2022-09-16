@@ -130,6 +130,9 @@ namespace HMX.HASSActron
 
 			SendMessage(string.Format("{0}/status", _strClientId.ToLower()), "offline");
 
+			// Add wait for outbound messages
+			Thread.Sleep(1500);
+
 			_mqtt.StopAsync();
 			_mqtt.Dispose();
 
