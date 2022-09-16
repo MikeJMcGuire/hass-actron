@@ -78,10 +78,11 @@ namespace HMX.HASSActron
 			{
 				optionsTLS = new MqttClientOptionsBuilderTlsParameters
 				{
-					IgnoreCertificateChainErrors = true,
-					UseTls = true,
-					IgnoreCertificateRevocationErrors = true,
 					AllowUntrustedCertificates = true,
+					CertificateValidationHandler = delegate { return true; },
+					IgnoreCertificateChainErrors = true,
+					IgnoreCertificateRevocationErrors = true,
+					UseTls = true,
 					SslProtocol = System.Security.Authentication.SslProtocols.Tls12
 				};
 
