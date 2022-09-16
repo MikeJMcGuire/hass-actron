@@ -83,7 +83,7 @@ namespace HMX.HASSActron
 					IgnoreCertificateChainErrors = true,
 					IgnoreCertificateRevocationErrors = true,
 					UseTls = true,
-					SslProtocol = System.Security.Authentication.SslProtocols.Tls12
+					SslProtocol = System.Security.Authentication.SslProtocols.Tls12 | System.Security.Authentication.SslProtocols.Tls13
 				};
 
 				clientOptions = clientOptions.WithTls(optionsTLS);
