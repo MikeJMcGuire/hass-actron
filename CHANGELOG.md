@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- Updated package versions.
+- Migrated from .NET 6.0 to .NET 7.0.
 - Changed base images to Alpine from Debian to match the HA base images.
 
 ### Removed
