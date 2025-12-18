@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v2025.12.0] - 2025-12-18
+
+### Changed
+
+- Package/framework updates.
+
 ## [v2025.9.0] - 2025-09-24
 
 ### Changed
